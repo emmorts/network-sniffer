@@ -6,8 +6,10 @@ var db = new sqlite.Database('../../db/log.db');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  var query = "SELECT * FROM device";
-  db.all(query, function (error, result) {
+  db.all("SELECT * FROM device", function (error, result) {
+    if (error) {
+      throw error;
+    }
     if (result) {
       var devices = result
         .sort(sortByTimestamp)
@@ -19,13 +21,30 @@ router.get('/', function(req, res) {
           return device;
         });
     }
-    if (error) {
-      throw error;
-    }
     res.render('index', {
       devices: devices
     });
   });
+});
+
+router.get('/api/history/:id', function (req, res) {
+  var lastDay = moment().add(-24, 'hours').unix();
+  db.all("SELECT * FROM deviceHistory WHERE deviceId = ? and timestamp > ?",
+    req.params.id, lastDay, function (error, result) {
+    if (error) {
+      throw error;
+    }
+    if (result && result.length > 0) {
+      var timestamps = result
+        .map(function (historyItem) {
+          return historyItem.timestamp;
+        })
+        .sort();
+      res.json(timestamps);
+    } else {
+      res.status(204).send();
+    }
+  })
 });
 
 function sortByTimestamp (a, b) {

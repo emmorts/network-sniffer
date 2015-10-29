@@ -7,9 +7,12 @@ block content
       span.device-list-header-ip(title="Assigned IP") Assigned IP
       span.device-list-header-status &nbsp;
       span.device-list-header-timestamp(title="Last seen on...") Last seen on...
-    each device in devices
-      div.device-list-item.js-item
-        span.device-list-item-name(title=device.name) #{device.name}
-        span.device-list-item-ip(title=device.ip) #{device.ip}
-        span.device-list-item-status.js-timestamp(title="Status" data-timestamp=device.timestamp) &nbsp;
-        span.device-list-item-timestamp(title=device.activeOn) #{device.activeOn}
+    div.device-list-content
+      each device in devices
+        div.device-list-content-item.js-item(data-id=device.id)
+          div.device-list-content-item-details
+            span.device-list-content-item-details-name(title=device.name) #{device.name}
+            span.device-list-content-item-details-ip(title=device.ip) #{device.ip}
+            span.device-list-content-item-details-status.js-timestamp(title="Status" data-timestamp=device.timestamp) &nbsp;
+            span.device-list-content-item-details-timestamp(title=device.activeOn) #{device.activeOn}
+          div.device-list-content-item-history.js-history
