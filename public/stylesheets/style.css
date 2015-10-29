@@ -9,12 +9,20 @@ body {
     padding: 0.5rem;
     font-size: 14px;
   }
+
+  .ct-line {
+    stroke-width: 2px;
+  }
 }
 
 @media (max-width: 320px) {
   body {
     padding: 0.5rem;
     font-size: 12px;
+  }
+
+  .ct-line {
+    stroke-width: 1px;
   }
 }
 

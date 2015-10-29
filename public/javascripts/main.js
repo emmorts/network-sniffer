@@ -1,25 +1,46 @@
 var activeChart = null;
-var cache = {};
 var chartOptions = {
   height: '8rem',
   axisX: {
     type: Chartist.FixedScaleAxis,
-    divisor: 5,
-    labelInterpolationFnc: function(value) {
+    divisor: 24,
+    labelInterpolationFnc: function (value) {
       return moment(value).format('HH:mm');
     }
   },
   axisY: {
     onlyInteger: true,
-    low: 0
+    low: 0,
+    labelInterpolationFnc: function (value) {
+      return value ? 'Online' : 'Offline';
+    }
   },
   series: {
     history: {
+      // lineSmooth: Chartist.Interpolation.simple(),
       lineSmooth: Chartist.Interpolation.step(),
-      showPoint: false
+      showPoint: false,
+      showArea: true
     }
   }
 };
+var responsiveOptions = [
+  ['screen and (max-width: 1024px)', {
+    axisX: {
+      divisor: 16
+    }
+  }],
+  ['screen and (max-width: 768px)', {
+    axisX: {
+      divisor: 10
+    }
+  }],
+  ['screen and (max-width: 468px)', {
+    axisX: {
+      divisor: 5
+    }
+  }]
+];
 
 ready(function () {
   var winWidth = document.body.offsetWidth || document.documentElement.offsetWidth || window.innerWidth;
@@ -92,7 +113,20 @@ function loadChart (item) {
           if (activeChart) {
             activeChart.detach();
           }
-          activeChart = new Chartist.Line('.ct-chart', data, chartOptions);
+          activeChart = new Chartist.Line('.ct-chart', data, chartOptions, responsiveOptions);
+          activeChart.on('draw', function(data) {
+            if(data.type === 'line' || data.type === 'area') {
+              data.element.animate({
+                d: {
+                  begin: 50 * data.index,
+                  dur: 500,
+                  from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+                  to: data.path.clone().stringify(),
+                  easing: Chartist.Svg.Easing.easeOutQuint
+                }
+              });
+            }
+          });
         }
       }
     }
