@@ -1,0 +1,132 @@
+body {
+  padding: 3rem;
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: rgb(245, 245, 245);
+}
+
+@media (max-width: 468px) {
+  body {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  body {
+    padding: 0.5rem;
+    font-size: 12px;
+  }
+}
+
+.device-list {
+  display: block;
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(212, 212, 212);
+  border-radius: 0.3rem;
+}
+
+  .device-list-header {
+    display: table;
+    table-layout: fixed;
+    box-sizing: border-box;
+    width: 100%;
+    line-height: 2.5rem;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgb(212, 212, 212);
+    padding: 0 0.6rem;
+  }
+
+    .device-list-header-name,
+    .device-list-header-ip,
+    .device-list-header-status,
+    .device-list-header-timestamp {
+      display: table-cell;
+      vertical-align: top;
+      box-sizing: border-box;
+      padding: 0 0.2rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .device-list-header-status {
+      width: 1.2rem;
+      padding: 0 0.3rem;
+    }
+
+  .device-list-item {
+    display: table;
+    table-layout: fixed;
+    box-sizing: border-box;
+    height: 1.9rem;
+    line-height: 1.9rem;
+    width: 100%;
+    padding: 0 0.6rem;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 1px 0 1px 0;
+  }
+
+  .device-list-item.active {
+    background-color: rgb(246, 246, 246);
+    border-color: rgb(212, 212, 212);
+    height: 3.8rem;
+  }
+
+  .device-list-item.active
+    .device-list-item-name,
+  .device-list-item.active
+    .device-list-item-ip,
+  .device-list-item.active
+    .device-list-item-status,
+  .device-list-item.active
+    .device-list-item-timestamp {
+      white-space: normal;
+      overflow: auto;
+      text-overflow: clip;
+      word-wrap: break-word;
+    }
+
+    .device-list-item-name,
+    .device-list-item-ip,
+    .device-list-item-status,
+    .device-list-item-timestamp {
+      display: table-cell;
+      vertical-align: top;
+      box-sizing: border-box;
+      padding: 0 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .device-list-item-status {
+      position: relative;
+      width: 1.4rem;
+      padding: 0 0.3rem;
+    }
+
+      .device-list-item-status:after {
+        display: inline-block;
+        position: absolute;
+        content: '';
+        width: 0.6rem;
+        height: 0.6rem;
+        top: 0.65rem;
+        border-radius: 0.6rem;
+      }
+
+      .device-list-item-status.success:after {
+        background-color: rgb(46, 204, 113);
+      }
+
+      .device-list-item-status.warning:after {
+        background-color: rgb(230, 126, 34);
+      }
+
+      .device-list-item-status.danger:after {
+        background-color: rgb(231, 76, 60);
+      }
