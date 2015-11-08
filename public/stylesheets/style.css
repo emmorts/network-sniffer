@@ -4,14 +4,14 @@ body {
   background-color: rgb(245, 245, 245);
 }
 
+.ct-line {
+  stroke-width: 1px;
+}
+
 @media (max-width: 468px) {
   body {
     padding: 0.5rem;
     font-size: 14px;
-  }
-
-  .ct-line {
-    stroke-width: 2px;
   }
 }
 
@@ -19,10 +19,6 @@ body {
   body {
     padding: 0.5rem;
     font-size: 12px;
-  }
-
-  .ct-line {
-    stroke-width: 1px;
   }
 }
 
@@ -75,17 +71,13 @@ body {
     border-style: solid;
     border-color: transparent;
     border-width: 1px 0 1px 0;
-    transition: height 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    transition: height 0.2s ease-in-out, background-color 0.1s ease-in-out;
     cursor: pointer;
     overflow: hidden;
   }
 
-  .device-list-content-item-details {
-    position: relative;
-    display: table;
-    table-layout: fixed;
-    box-sizing: border-box;
-    width: 100%;
+  .device-list-content-item:hover {
+    background-color: rgb(246, 246, 246);
   }
 
   .device-list-content-item:first-child {
@@ -100,6 +92,14 @@ body {
     background-color: rgb(246, 246, 246);
     border-color: rgb(212, 212, 212);
     height: 10rem;
+  }
+
+  .device-list-content-item-details {
+    position: relative;
+    display: table;
+    table-layout: fixed;
+    box-sizing: border-box;
+    width: 100%;
   }
 
 /*  .device-list-content-item.active

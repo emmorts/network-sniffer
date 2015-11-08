@@ -28,8 +28,8 @@ router.get('/', function(req, res) {
 });
 
 router.get('/api/history/:id', function (req, res) {
-  var lastDay = moment().add(-24, 'hours').unix();
-  db.all("SELECT * FROM deviceHistory WHERE deviceId = ? and timestamp > ?",
+  var lastDay = moment().add(-24, 'hours').unix() * 1000;
+  db.all("SELECT timestamp FROM deviceHistory WHERE deviceId = ? and timestamp > ?",
     req.params.id, lastDay, function (error, result) {
     if (error) {
       throw error;

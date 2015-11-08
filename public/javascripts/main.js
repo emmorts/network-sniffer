@@ -136,24 +136,33 @@ function loadChart (item) {
 }
 
 function generateSeries (data) {
-  var offset, i;
+  var offset, i, last, hour = 3600000,now = Date.now();
   if (data && data.length > 0) {
     for (i = 0; i < data.length; i++) {
       offset = 0;
       if (i + 1 !== data.length) {
-        if (data[i + 1] - data[i] > 360000) {
+        if (data[i + 1] - data[i] > hour / 2) {
           data.splice(i + 1, 0, {
-            x: new Date(data[i] + 90000),
+            x: new Date(data[i] + hour / 4),
             y: 0
           });
           offset = 1;
           i++;
         }
+      } else {
+        last = data[i];
       }
       data[i - offset] = {
         x: new Date(data[i - offset]),
         y: 1
       };
+    }
+    while (now - last > hour / 2) {
+      data.splice(data.length, 0, {
+        x: new Date(last + hour / 4),
+        y: 0
+      });
+      last += hour / 2;
     }
     return data;
   }
@@ -167,9 +176,9 @@ function updateTimestampStatusElements () {
     timestampElementList.forEach(function (timestampElement) {
       if (timestampElement.dataset.timestamp) {
         var difference = Date.now() - timestampElement.dataset.timestamp;
-        if (difference < 180000) {
+        if (difference < 10 * 60 * 1000) {
           timestampElement.classList.add('success');
-        } else if (difference < 360000) {
+        } else if (difference < 30 * 60 * 1000) {
           timestampElement.classList.add('warning');
         } else {
           timestampElement.classList.add('danger');
