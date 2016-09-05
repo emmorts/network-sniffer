@@ -14,7 +14,7 @@ function updateDatabase (devices) {
     var now = Date.now();
     console.log("Updating history of " + device.name + "(" + device.ip + ")");
     db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
-      { name = device.name, ip = device.ip }, function (error, result) {
+      { name: device.name, ip: device.ip }, function (error, result) {
       if (error) {
         throw error;
       }
@@ -31,7 +31,7 @@ function updateDatabase (devices) {
     devices.forEach(function (device) {
       var now = Date.now();
       db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
-        { name = device.name, ip = device.ip }, function (error, result) {
+        { name: device.name, ip: device.ip }, function (error, result) {
         if (error) {
           throw error;
         }
