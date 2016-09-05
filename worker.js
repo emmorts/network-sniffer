@@ -79,7 +79,7 @@ function parseData (data) {
     while (row = pattern.exec(data)) {
       var name = row[1] || 'n/a';
       array.push({
-        name: row[1],
+        name: name,
         ip: row[2]
       });
     }
