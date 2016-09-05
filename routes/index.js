@@ -47,6 +47,17 @@ router.get('/api/history/:id', function (req, res) {
   })
 });
 
+router.patch('/api/device/:id', function (req, res) {
+  var id = req.params.id;
+  var alias = req.body.alias;
+  db.run('UPDATE device SET alias = ? WHERE id = ?', alias, id, function (error, result) {
+    if (error) {
+      throw error;
+    }
+    res.status(204).send();
+  });
+});
+
 function sortByTimestamp (a, b) {
   return b.timestamp - a.timestamp;
 }
