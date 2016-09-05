@@ -11,7 +11,7 @@ fetchConnectedDevices(updateDatabase);
 
 function updateDatabase (devices) {
   function updateHistory (device) {
-    db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function () {
+    db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function (error, result) {
       if (error) {
         throw error;
       }
@@ -65,6 +65,7 @@ function parseData (data) {
     var pattern = new RegExp("Nmap scan report for ?([a-zA-Z0-9\-]+)? [^0-9]?([0-9.]+)", 'g');
     var row;
     while (row = pattern.exec(data)) {
+      var name = row[1] || 'n/a';
       array.push({
         name: row[1],
         ip: row[2]
