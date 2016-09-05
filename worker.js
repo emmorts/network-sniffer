@@ -11,6 +11,7 @@ fetchConnectedDevices(updateDatabase);
 
 function updateDatabase (devices) {
   function updateHistory (device) {
+    var now = Date.now();
     console.log("Updating history of " + device.name + "(" + device.ip + ")");
     db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function (error, result) {
       if (error) {
