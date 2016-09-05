@@ -18,7 +18,9 @@ router.get('/', function(req, res) {
         })
         .map(function (device) {
           device.activeOn = moment(device.timestamp).fromNow();
-          device.name = device.alias || device.name;
+          if (device.alias) {
+            device.name = device.alias;
+          }
           return device;
         });
     }

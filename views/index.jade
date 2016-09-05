@@ -11,7 +11,7 @@ block content
       each device in devices
         div.device-list-content-item.js-item(data-id=device.id)
           div.device-list-content-item-details
-            span.device-list-content-item-details-name(title=device.name) #{device.name}(#{device.alias})
+            span.device-list-content-item-details-name(title=device.name) #{device.name}
             span.device-list-content-item-details-ip(title=device.ip) #{device.ip}
             span.device-list-content-item-details-status.js-timestamp(title="Status" data-timestamp=device.timestamp) &nbsp;
             span.device-list-content-item-details-timestamp(title=device.activeOn) #{device.activeOn}
