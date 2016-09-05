@@ -17,8 +17,8 @@ var chartOptions = {
   },
   series: {
     history: {
-      lineSmooth: Chartist.Interpolation.simple(),
-      // lineSmooth: Chartist.Interpolation.step(),
+      // lineSmooth: Chartist.Interpolation.simple(),
+      lineSmooth: Chartist.Interpolation.step(),
       showPoint: false,
       showArea: true
     }
