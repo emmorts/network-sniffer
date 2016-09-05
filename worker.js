@@ -11,11 +11,18 @@ fetchConnectedDevices(updateDatabase);
 
 function updateDatabase (devices) {
   function updateHistory (device) {
+    console.log("Updating history of " + device.name + "(" + device.ip + ")");
     db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function (error, result) {
       if (error) {
         throw error;
       }
-      db.run("INSERT INTO deviceHistory(deviceId, timestamp) VALUES(?, ?)", result.id, now);
+      if (!result) {
+        console.log("Device was not found; failed to update history.");
+      } else {
+        db.run("INSERT INTO deviceHistory(deviceId, timestamp) VALUES(?, ?)", result.id, now, function (error, result) {
+          console.log("History of " + device.ip + " was updated");
+        });
+      }
     });
   }
   if (devices && devices.length > 0) {
@@ -26,15 +33,20 @@ function updateDatabase (devices) {
           throw error;
         }
         if (!result) {
-          db.run("INSERT INTO device(name, ip, timestamp) VALUES (?, ?, ?)", device.name, device.ip, now, function () {
-            updateHistory(device);
+          db.run("INSERT INTO device(name, ip, timestamp) VALUES (?, ?, ?)", device.name, device.ip, now, function (error) {
+            if (!error){
+              console.log('Added entry ' + device.name);
+              updateHistory(device);
+            }
           });
-          console.log('Added entry ' + device.name);
         } else {
-          db.run("UPDATE device SET timestamp = ? WHERE id = ?", now, result.id, function () {
+          db.run("UPDATE device SET timestamp = ? WHERE id = ?", now, result.id, function (error) {
+            if (!error){
+              console.log('Updated entry ' + device.name);
+              updateHistory(device);
+            }
             updateHistory(device);
           });
-          console.log('Updated entry ' + device.name);
         }
       });
     });
