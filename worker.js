@@ -4,7 +4,7 @@ var sqlite = require('sqlite3').verbose();
 var db = new sqlite.Database('../../db/log.db');
 var child;
 
-db.run("CREATE TABLE IF NOT EXISTS device (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, ip TEXT, timestamp INTEGER)");
+db.run("CREATE TABLE IF NOT EXISTS device (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, ip TEXT, alias TEXT, timestamp INTEGER)");
 db.run("CREATE TABLE IF NOT EXISTS deviceHistory (id INTEGER PRIMARY KEY AUTOINCREMENT, deviceId INTEGER, timestamp INTEGER)");
 
 fetchConnectedDevices(updateDatabase);
@@ -13,7 +13,8 @@ function updateDatabase (devices) {
   function updateHistory (device) {
     var now = Date.now();
     console.log("Updating history of " + device.name + "(" + device.ip + ")");
-    db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function (error, result) {
+    db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
+      { name = device.name, ip = device.ip }, function (error, result) {
       if (error) {
         throw error;
       }
@@ -29,7 +30,8 @@ function updateDatabase (devices) {
   if (devices && devices.length > 0) {
     devices.forEach(function (device) {
       var now = Date.now();
-      db.get("SELECT id FROM device WHERE name = ? AND ip = ?", device.name, device.ip, function (error, result) {
+      db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
+        { name = device.name, ip = device.ip }, function (error, result) {
         if (error) {
           throw error;
         }

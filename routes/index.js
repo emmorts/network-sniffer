@@ -14,10 +14,11 @@ router.get('/', function(req, res) {
       var devices = result
         .sort(sortByTimestamp)
         .filter(function (device) {
-          return device.name !== 'easy.box';
+          return device.name !== 'dir-320';
         })
         .map(function (device) {
           device.activeOn = moment(device.timestamp).fromNow();
+          device.name = device.alias || device.name;
           return device;
         });
     }
