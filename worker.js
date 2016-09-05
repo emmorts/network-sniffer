@@ -46,7 +46,6 @@ function updateDatabase (devices) {
               console.log('Updated entry ' + device.name);
               updateHistory(device);
             }
-            updateHistory(device);
           });
         }
       });
