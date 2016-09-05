@@ -58,7 +58,7 @@ function fetchConnectedDevices (callback) {
   // var lastDay = moment().add(-48, 'hours').unix();
   // db.run("DELETE FROM deviceHistory WHERE timestamp < ?", lastDay);
   console.log('Fetching connected devices...');
-  child = exec("sudo nmap -sP 192.168.1.1/24", function (error, stdout, stderr) {
+  child = exec("sudo nmap -sP 192.168.0.1/24", function (error, stdout, stderr) {
     if (error) {
       throw error;
     } else if (stderr) {
