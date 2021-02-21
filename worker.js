@@ -1,8 +1,8 @@
-var sys = require('util')
-var exec = require('child_process').exec;
-var sqlite = require('sqlite3').verbose();
-var db = new sqlite.Database('../../db/log.db');
-var child;
+const exec = require('child_process').exec;
+const sqlite = require('sqlite3').verbose();
+const db = new sqlite.Database('./db/log.db');
+
+let child;
 
 db.run("CREATE TABLE IF NOT EXISTS device (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, ip TEXT, alias TEXT, timestamp INTEGER)");
 db.run("CREATE TABLE IF NOT EXISTS deviceHistory (id INTEGER PRIMARY KEY AUTOINCREMENT, deviceId INTEGER, timestamp INTEGER)");
