@@ -1,4 +1,4 @@
 module.exports = {
-  "databasePath": "./db/log.db",
+  "databasePath": "/home/pi/git/network-sniffer/db/log.db",
   "pingHost": "google.com"
 }

@@ -13,7 +13,7 @@ fetchConnectedDevices(updateDatabase);
 function updateDatabase (devices) {
   function updateHistory (device) {
     const now = Date.now();
-    console.log("Updating history of " + device.name + "(" + device.ip + ")");
+    console.log("Updating history of " + device.name + " (" + device.ip + ")");
     db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
       { $name: device.name, $ip: device.ip }, function (error, result) {
       if (error) {
@@ -60,7 +60,8 @@ function fetchConnectedDevices (callback) {
   // var lastDay = moment().add(-48, 'hours').unix();
   // db.run("DELETE FROM deviceHistory WHERE timestamp < ?", lastDay);
   console.log('Fetching connected devices...');
-  child = exec("nmap -sP 192.168.0.1/24", function (error, stdout, stderr) {
+  child = exec("nmap -sn 192.168.1.0/24", function (error, stdout, stderr) {
+    console.log(stdout);
     if (error) {
       throw error;
     } else if (stderr) {
@@ -78,12 +79,12 @@ function parseData (data) {
   const array = [];
 
   if (data) {
-    const pattern = new RegExp("Nmap scan report for ?([a-zA-Z0-9\-]+)? [^0-9]?([0-9.]+)", 'g');
+    const pattern = new RegExp("Nmap scan report for ?([a-zA-Z0-9\-\.]+)? [^0-9]?([0-9.]+)", 'g');
     let row;
     while (row = pattern.exec(data)) {
       const name = row[1] || 'n/a';
       array.push({
-        name: name,
+        name: name.replace('.lan', ''),
         ip: row[2]
       });
     }

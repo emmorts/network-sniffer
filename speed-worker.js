@@ -6,13 +6,14 @@ const db = new sqlite.Database(config.databasePath);
 db.run("CREATE TABLE IF NOT EXISTS speed (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, mbits DECIMAL(10, 5), timestamp INTEGER)");
 
 checkInternetSpeed();
-setInterval(() => checkInternetSpeed(), 60 * 1000);
 
 function checkInternetSpeed() {
+  console.log('Running internet speed test...')
   exec('curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -', (error, stdout, stderr) => {
     if (error) {
       console.log(`Failed to run internet speed check, ${error}`);
     }
+    console.log(stdout);
 
     const [down, up] = parseInternetSpeed(stdout);
     if (down && up) {

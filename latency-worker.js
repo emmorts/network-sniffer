@@ -42,7 +42,7 @@ function pingHost() {
 }
 
 function parsePingResponse(string) {
-  const pattern = /time=(\d+)ms/;
+  const pattern = /time=(.+) ms/;
   const match = string.match(pattern);
   if (match) {
     return match[1];
