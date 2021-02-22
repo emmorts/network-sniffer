@@ -42,6 +42,23 @@ router.get('/api/latency', function(req, res) {
   });
 });
 
+router.get('/api/speed', function(req, res) {
+  const timeLimit = req.query.time || 5 * 60;
+  const now = Date.now();
+  const timestamp = now - timeLimit * 1000;
+
+  db.all("SELECT * FROM speed WHERE timestamp > ? ORDER BY timestamp DESC", timestamp, function (error, result) {
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      download: result.filter(x => x.type === 'download'),
+      upload: result.filter(x => x.type === 'upload')
+    });
+  });
+});
+
 router.get('/api/history/:id', function (req, res) {
   var lastDay = moment().add(-24, 'hours').unix() * 1000;
   db.all("SELECT timestamp FROM deviceHistory WHERE deviceId = ? and timestamp > ?",

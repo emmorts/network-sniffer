@@ -51,9 +51,19 @@ function checkInternetSpeed() {
       console.log(`Failed to run internet speed check, ${error}`);
     }
 
-    console.log(stdout);
     const [down, up] = parseInternetSpeed(stdout);
-    console.log(down, up);
+    if (down && up) {
+      db.run("INSERT INTO speed(type, mbits, timestamp) VALUES (?, ?, ?)", 'download', down, Date.now(), function (error) {
+        if (error) {
+          console.log(error);
+        }
+      });
+      db.run("INSERT INTO speed(type, mbits, timestamp) VALUES (?, ?, ?)", 'upload', up, Date.now(), function (error) {
+        if (error) {
+          console.log(error);
+        }
+      });
+    }
 
     if (stderr) {
       console.log(`stderr: ${stderr}`);
