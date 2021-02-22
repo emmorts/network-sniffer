@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const spawn = require('child_process').spawn;
+const exec = require('child_process').exec;
 const sqlite = require('sqlite3').verbose();
 const config = require("./config/index");
 const db = new sqlite.Database(config.databasePath);
@@ -7,8 +8,11 @@ const db = new sqlite.Database(config.databasePath);
 let child;
 
 db.run("CREATE TABLE IF NOT EXISTS latency (id INTEGER PRIMARY KEY AUTOINCREMENT, host TEXT, ping DECIMAL(10, 5), timestamp INTEGER)");
+db.run("CREATE TABLE IF NOT EXISTS speed (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, mbits DECIMAL(10, 5), timestamp INTEGER)");
 
-pingHost()
+pingHost();
+checkInternetSpeed();
+setInterval(() => checkInternetSpeed(), 60 * 1000);
 
 function pingHost() {
   const isWin = process.platform === 'win32';
@@ -20,7 +24,7 @@ function pingHost() {
   const ping = spawn(commandPath, pingArgs);
   
   ping.stdout.on('data', function (data) {
-    const latency = parseResponse(data.toString());
+    const latency = parsePingResponse(data.toString());
     if (latency) {
       db.run("INSERT INTO latency(host, ping, timestamp) VALUES (?, ?, ?)", config.pingHost, latency, Date.now(), function (error) {
         console.log(`Latency: ${latency}`);
@@ -41,7 +45,24 @@ function pingHost() {
   });
 }
 
-function parseResponse(string) {
+function checkInternetSpeed() {
+  exec('curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -', (error, stdout, stderr) => {
+    if (error) {
+      console.log(`Failed to run internet speed check, ${error}`);
+    }
+
+    console.log(stdout);
+    const [down, up] = parseInternetSpeed(stdout);
+    console.log(down, up);
+
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+    }
+  });
+
+}
+
+function parsePingResponse(string) {
   const pattern = /time=(\d+)ms/;
   const match = string.match(pattern);
   if (match) {
@@ -49,4 +70,22 @@ function parseResponse(string) {
   }
 
   return null;
+}
+
+function parseInternetSpeed(string) {
+  let download, upload;
+
+  const downloadPattern = /Download: (.+) Mbit\/s/;
+  const downloadMatch = string.match(downloadPattern);
+  if (downloadMatch) {
+    download = downloadMatch[1];
+  }
+
+  const uploadPattern = /Upload: (.+) Mbit\/s/;
+  const uploadMatch = string.match(uploadPattern);
+  if (uploadMatch) {
+    upload = uploadMatch[1];
+  }
+
+  return [download, upload];
 }
