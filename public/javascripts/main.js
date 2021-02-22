@@ -2,6 +2,7 @@ const WORKER_INTERVAL = 60 * 1000;
 
 let activeChart = null;
 let latencyChart = null;
+let latencyActiveTime = 5 * 60;
 
 var latencyChartOptions = {
   height: '16rem',
@@ -72,10 +73,27 @@ ready(function () {
   updateTimestampStatusElements();
   initializeLatencyChart();
   bindItemEventListener();
+  bindLatencySettings();
   setInterval(() => {
     loadLatencyChart();
   }, 1000);
 });
+
+function bindLatencySettings () {
+  bindLatencyButton('.js-short', 30);
+  bindLatencyButton('.js-medium', 5 * 60);
+  bindLatencyButton('.js-long', 3600);
+}
+
+function bindLatencyButton(selector, time) {
+  const button = document.querySelector(selector);
+  if (button) {
+    var clickEvent = !document.ontouchstart ? 'click' : 'touchstart';
+    button.addEventListener(clickEvent, function (event) {
+      latencyActiveTime = time;
+    });
+  }
+}
 
 function bindItemEventListener () {
   var itemList = document.querySelectorAll('.js-item');
@@ -127,24 +145,11 @@ function initializeLatencyChart () {
   };
 
   latencyChart = new Chartist.Line('.js-latency', data, latencyChartOptions, responsiveOptions);
-  latencyChart.on('draw', function(data) {
-    // if (data.type === 'line' || data.type === 'area') {
-    //   data.element.animate({
-    //     d: {
-    //       begin: 50 * data.index,
-    //       dur: 500,
-    //       from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-    //       to: data.path.clone().stringify(),
-    //       easing: Chartist.Svg.Easing.easeOutQuint
-    //     }
-    //   });
-    // }
-  });
 }
 
 function loadLatencyChart () {
   var request = new XMLHttpRequest();
-  request.open('GET', '/api/latency/');
+  request.open('GET', `/api/latency?time=${latencyActiveTime}`);
 
   var data = {
     series: [{

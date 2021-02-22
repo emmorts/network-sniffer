@@ -29,10 +29,15 @@ router.get('/', function(req, res) {
 });
 
 router.get('/api/latency', function(req, res) {
-  db.all("SELECT * FROM latency ORDER BY timestamp DESC LIMIT 5*60", function (error, result) {
+  const timeLimit = req.query.time || 5 * 60;
+  const now = Date.now();
+  const timestamp = now - timeLimit * 1000;
+
+  db.all("SELECT * FROM latency WHERE timestamp > ? ORDER BY timestamp DESC", timestamp, function (error, result) {
     if (error) {
       throw error;
     }
+
     res.json(result);
   });
 });

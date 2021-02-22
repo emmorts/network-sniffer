@@ -11,11 +11,13 @@ db.run("CREATE TABLE IF NOT EXISTS latency (id INTEGER PRIMARY KEY AUTOINCREMENT
 pingHost()
 
 function pingHost() {
+  const isWin = process.platform === 'win32';
   const pingArgs = [config.pingHost];
-  if (process.platform === 'win32') {
+  const commandPath = isWin ? 'ping' : '/bin/ping'
+  if (isWin) {
     pingArgs.splice(0, 0, '-t');
   }
-  const ping = spawn('ping', pingArgs);
+  const ping = spawn(commandPath, pingArgs);
   
   ping.stdout.on('data', function (data) {
     const latency = parseResponse(data.toString());
@@ -28,6 +30,10 @@ function pingHost() {
   
   ping.stderr.on('data', function (data) {
     console.log('stderr: ' + data.toString());
+  });
+  
+  ping.on('error', function (code) {
+    console.log(error);
   });
   
   ping.on('exit', function (code) {
