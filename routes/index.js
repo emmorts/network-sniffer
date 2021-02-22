@@ -1,8 +1,9 @@
-var express = require('express');
-var moment = require('moment');
-var router = express.Router();
-var sqlite = require('sqlite3').verbose();
-var db = new sqlite.Database('./db/log.db');
+const express = require('express');
+const moment = require('moment');
+const router = express.Router();
+const sqlite = require('sqlite3').verbose();
+const config = require("../config/index.js");
+const db = new sqlite.Database(config.databasePath);
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -24,6 +25,15 @@ router.get('/', function(req, res) {
     res.render('index', {
       devices: devices
     });
+  });
+});
+
+router.get('/api/latency', function(req, res) {
+  db.all("SELECT * FROM latency ORDER BY timestamp DESC LIMIT 5*60", function (error, result) {
+    if (error) {
+      throw error;
+    }
+    res.json(result);
   });
 });
 

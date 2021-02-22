@@ -1,6 +1,7 @@
 const exec = require('child_process').exec;
 const sqlite = require('sqlite3').verbose();
-const db = new sqlite.Database('./db/log.db');
+const config = require("./config/index");
+const db = new sqlite.Database(config.databasePath);
 
 let child;
 
@@ -11,7 +12,7 @@ fetchConnectedDevices(updateDatabase);
 
 function updateDatabase (devices) {
   function updateHistory (device) {
-    var now = Date.now();
+    const now = Date.now();
     console.log("Updating history of " + device.name + "(" + device.ip + ")");
     db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
       { $name: device.name, $ip: device.ip }, function (error, result) {
@@ -29,7 +30,7 @@ function updateDatabase (devices) {
   }
   if (devices && devices.length > 0) {
     devices.forEach(function (device) {
-      var now = Date.now();
+      const now = Date.now();
       db.get("SELECT id FROM device WHERE (name = $name OR alias = $name) AND ip = $ip",
         { $name: device.name, $ip: device.ip }, function (error, result) {
         if (error) {
@@ -74,12 +75,13 @@ function fetchConnectedDevices (callback) {
 }
 
 function parseData (data) {
-  var array = [];
+  const array = [];
+
   if (data) {
-    var pattern = new RegExp("Nmap scan report for ?([a-zA-Z0-9\-]+)? [^0-9]?([0-9.]+)", 'g');
-    var row;
+    const pattern = new RegExp("Nmap scan report for ?([a-zA-Z0-9\-]+)? [^0-9]?([0-9.]+)", 'g');
+    let row;
     while (row = pattern.exec(data)) {
-      var name = row[1] || 'n/a';
+      const name = row[1] || 'n/a';
       array.push({
         name: name,
         ip: row[2]

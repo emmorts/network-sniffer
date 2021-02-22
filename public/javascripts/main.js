@@ -1,6 +1,29 @@
 const WORKER_INTERVAL = 60 * 1000;
 
-var activeChart = null;
+let activeChart = null;
+let latencyChart = null;
+
+var latencyChartOptions = {
+  height: '16rem',
+  axisX: {
+    type: Chartist.FixedScaleAxis,
+    divisor: 24,
+    labelInterpolationFnc: function (value) {
+      return moment(value).format('HH:mm:ss');
+    }
+  },
+  axisY: {
+    onlyInteger: false,
+    low: 0,
+  },
+  series: {
+    latency: {
+      lineSmooth: Chartist.Interpolation.simple(),
+      showPoint: false,
+      showArea: true
+    }
+  }
+};
 var chartOptions = {
   height: '8rem',
   axisX: {
@@ -47,7 +70,11 @@ var responsiveOptions = [
 ready(function () {
   var winWidth = document.body.offsetWidth || document.documentElement.offsetWidth || window.innerWidth;
   updateTimestampStatusElements();
+  initializeLatencyChart();
   bindItemEventListener();
+  setInterval(() => {
+    loadLatencyChart();
+  }, 1000);
 });
 
 function bindItemEventListener () {
@@ -89,6 +116,55 @@ function unloadChart (item) {
     chart.parentElement.removeChild(chart);
     activeChart.detach();
   }
+}
+
+function initializeLatencyChart () {
+  var data = {
+    series: [{
+      name: 'latency',
+      data: []
+    }]
+  };
+
+  latencyChart = new Chartist.Line('.js-latency', data, latencyChartOptions, responsiveOptions);
+  latencyChart.on('draw', function(data) {
+    // if (data.type === 'line' || data.type === 'area') {
+    //   data.element.animate({
+    //     d: {
+    //       begin: 50 * data.index,
+    //       dur: 500,
+    //       from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+    //       to: data.path.clone().stringify(),
+    //       easing: Chartist.Svg.Easing.easeOutQuint
+    //     }
+    //   });
+    // }
+  });
+}
+
+function loadLatencyChart () {
+  var request = new XMLHttpRequest();
+  request.open('GET', '/api/latency/');
+
+  var data = {
+    series: [{
+      name: 'latency',
+      data: []
+    }]
+  };
+
+  request.onreadystatechange = function () {
+    if (request.readyState === 4) {
+      if (request.responseText) {
+        var result = JSON.parse(request.responseText);
+        data.series[0].data = generateLatencySeries(result);
+
+        latencyChart.update(data);
+      }
+    }
+  }
+
+  request.send();
 }
 
 function loadChart (item) {
@@ -135,6 +211,17 @@ function loadChart (item) {
   }
 
   request.send();
+}
+
+function generateLatencySeries(data) {
+  if (data && data.length) {
+    return data.map(item => ({
+      x: new Date(item.timestamp),
+      y: item.ping
+    }));
+  }
+
+  return [];
 }
 
 function generateSeries(data) {

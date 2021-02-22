@@ -22,15 +22,18 @@ body {
   }
 }
 
-.device-list {
+.device-list,
+.latency {
   display: block;
   width: 100%;
   background-color: rgb(255, 255, 255);
   border: 1px solid rgb(212, 212, 212);
   border-radius: 0.3rem;
+  margin-bottom: 2rem;
 }
 
-  .device-list-header {
+  .device-list-header,
+  .latency-header {
     display: table;
     table-layout: fixed;
     box-sizing: border-box;
@@ -39,6 +42,7 @@ body {
     font-size: 1.1rem;
     border-bottom: 1px solid rgb(212, 212, 212);
     padding: 0 0.6rem;
+    font-weight: 700;
   }
 
     .device-list-header-name,
