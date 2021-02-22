@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const spawn = require('child_process').spawn;
 const sqlite = require('sqlite3').verbose();
 const config = require("./config/index");
