@@ -22,6 +22,46 @@ body {
   }
 }
 
+.speed {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+  
+  .speed-item {
+    display: table-cell;
+    width: 50%;
+    box-sizing: border-box;
+  }
+
+  .speed-item:not(:last-child) {
+    padding-right: 1rem;
+  }
+
+  .speed-item:not(:first-child) {
+    padding-left: 1rem;
+  }
+
+.download,
+.upload {
+  box-sizing: border-box;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(212, 212, 212);
+  border-radius: 0.3rem;
+  margin-bottom: 2rem;
+}
+
+.download-header,
+.upload-header {
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 2.5rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgb(212, 212, 212);
+  padding: 0 0.6rem;
+  font-weight: 700;
+}
+
 .latency-settings {
   padding: 1rem 0.5rem;
 }

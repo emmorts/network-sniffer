@@ -1,9 +1,54 @@
 const WORKER_INTERVAL = 60 * 1000;
+const SPEED_UPDATE_INTERVAL = 60 * 1000;
 
 let activeChart = null;
 let latencyChart = null;
+let downloadChart = null;
+let uploadChart = null;
 let latencyActiveTime = 5 * 60;
 
+var downloadChartOptions = {
+  height: '12rem',
+  axisX: {
+    type: Chartist.FixedScaleAxis,
+    divisor: 24,
+    labelInterpolationFnc: function (value) {
+      return moment(value).format('HH:mm');
+    }
+  },
+  axisY: {
+    onlyInteger: false,
+    low: 0,
+  },
+  series: {
+    download: {
+      lineSmooth: Chartist.Interpolation.simple(),
+      showPoint: false,
+      showArea: true
+    }
+  }
+};
+var uploadChartOptions = {
+  height: '12rem',
+  axisX: {
+    type: Chartist.FixedScaleAxis,
+    divisor: 24,
+    labelInterpolationFnc: function (value) {
+      return moment(value).format('HH:mm');
+    }
+  },
+  axisY: {
+    onlyInteger: false,
+    low: 0,
+  },
+  series: {
+    upload: {
+      lineSmooth: Chartist.Interpolation.simple(),
+      showPoint: false,
+      showArea: true
+    }
+  }
+};
 var latencyChartOptions = {
   height: '16rem',
   axisX: {
@@ -69,14 +114,20 @@ var responsiveOptions = [
 ];
 
 ready(function () {
-  var winWidth = document.body.offsetWidth || document.documentElement.offsetWidth || window.innerWidth;
   updateTimestampStatusElements();
   initializeLatencyChart();
+  initializeDownloadChart();
+  initializeUploadChart();
   bindItemEventListener();
   bindLatencySettings();
+  loadLatencyChart();
   setInterval(() => {
     loadLatencyChart();
   }, 1000);
+  loadSpeedCharts();
+  setInterval(() => {
+    loadSpeedCharts();
+  }, SPEED_UPDATE_INTERVAL);
 });
 
 function bindLatencySettings () {
@@ -134,6 +185,58 @@ function unloadChart (item) {
     chart.parentElement.removeChild(chart);
     activeChart.detach();
   }
+}
+
+function initializeDownloadChart () {
+  var data = {
+    series: [{
+      name: 'download',
+      data: []
+    }]
+  };
+
+  downloadChart = new Chartist.Line('.js-download', data, downloadChartOptions, responsiveOptions);
+}
+
+function loadSpeedCharts () {
+  const request = new XMLHttpRequest();
+  request.open('GET', `/api/speed?time=${30 * 60}`);
+
+  request.onreadystatechange = function () {
+    if (request.readyState === 4) {
+      if (request.responseText) {
+        const result = JSON.parse(request.responseText);
+        const [download, upload] = generateSpeedSeries(result);
+
+        downloadChart.update({
+          series: [{
+            name: 'download',
+            data: download
+          }]
+        });
+
+        uploadChart.update({
+          series: [{
+            name: 'upload',
+            data: upload
+          }]
+        });
+      }
+    }
+  }
+
+  request.send();
+}
+
+function initializeUploadChart () {
+  var data = {
+    series: [{
+      name: 'upload',
+      data: []
+    }]
+  };
+
+  uploadChart = new Chartist.Line('.js-upload', data, uploadChartOptions, responsiveOptions);
 }
 
 function initializeLatencyChart () {
@@ -224,6 +327,23 @@ function generateLatencySeries(data) {
       x: new Date(item.timestamp),
       y: item.ping
     }));
+  }
+
+  return [];
+}
+
+function generateSpeedSeries(data) {
+  if (data) {
+    return [
+      data.download.map(item => ({
+        x: new Date(item.timestamp),
+        y: item.mbits
+      })),
+      data.upload.map(item => ({
+        x: new Date(item.timestamp),
+        y: item.mbits
+      })),
+    ];
   }
 
   return [];
